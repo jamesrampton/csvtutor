@@ -1,17 +1,12 @@
 use std::{env, error::Error, ffi::OsString, process};
 
+type Record = (String, String, Option<u64>, f64, f64);
+
 fn run() -> Result<(), Box<dyn Error>> {
     let file_path = get_first_arg()?;
-    let mut rdr = csv::ReaderBuilder::new()
-        .has_headers(false)
-        .delimiter(b';')
-        .double_quote(false)
-        .escape(Some(b'\\'))
-        .flexible(true)
-        .comment(Some(b'#'))
-        .from_path(file_path)?;
-    for result in rdr.records() {
-        let record = result?;
+    let mut rdr = csv::ReaderBuilder::new().from_path(file_path)?;
+    for result in rdr.deserialize() {
+        let record: Record = result?;
         println!("{:?}", record);
     }
     Ok(())
