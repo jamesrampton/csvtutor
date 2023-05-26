@@ -1,6 +1,7 @@
-use std::{env, error::Error, ffi::OsString, process};
+use std::{collections::HashMap, env, error::Error, ffi::OsString, process};
 
-type Record = (String, String, Option<u64>, f64, f64);
+// type Record = (String, String, Option<u64>, f64, f64);
+type Record = HashMap<String, String>;
 
 fn run() -> Result<(), Box<dyn Error>> {
     let file_path = get_first_arg()?;
