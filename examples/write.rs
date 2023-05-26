@@ -2,21 +2,18 @@ use std::{env, error::Error, ffi::OsString, process};
 
 fn run() -> Result<(), Box<dyn Error>> {
     let file_path = get_first_arg()?;
-    let mut wtr = csv::WriterBuilder::new()
-        .delimiter(b'\t')
-        .quote_style(csv::QuoteStyle::NonNumeric)
-        .from_path(file_path)?;
+    let mut wtr = csv::WriterBuilder::new().from_path(file_path)?;
 
     wtr.write_record(&["City", "State", "Population", "Latitude", "Longitude"])?;
-    wtr.write_record(&["Davidsons Landing", "AK", "", "65.2419444", "-165.2716667"])?;
-    wtr.write_record(vec!["Kenai", "AK", "7610", "60.5544444", "-151.2583333"])?;
-    wtr.write_record(&csv::StringRecord::from(vec![
-        "Oakman",
-        "AL",
-        "",
-        "33.7133333",
-        "-87.3886111",
-    ]))?;
+    wtr.serialize((
+        "Davidsons Landing",
+        "AK",
+        None::<u64>,
+        65.2419444,
+        -165.2716667,
+    ))?;
+    wtr.serialize(("Kenai", "AK", Some(7610), 60.5544444, -151.2583333))?;
+    wtr.serialize(("Oakman", "AL", None::<u64>, 33.7133333, -87.3886111))?;
     wtr.flush()?;
 
     Ok(())
