@@ -8,6 +8,7 @@ use std::{env, error::Error, ffi::OsString, process};
 struct Record {
     latitude: f64,
     longitude: f64,
+    #[serde(deserialize_with = "csv::invalid_option")]
     population: Option<u64>,
     city: String,
     state: String,
