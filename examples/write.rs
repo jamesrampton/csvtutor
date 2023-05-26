@@ -1,7 +1,8 @@
-use std::{error::Error, process};
+use std::{env, error::Error, ffi::OsString, process};
 
 fn run() -> Result<(), Box<dyn Error>> {
-    let mut wtr = csv::Writer::from_writer(std::io::stdout());
+    let file_path = get_first_arg()?;
+    let mut wtr = csv::Writer::from_path(file_path)?;
 
     wtr.write_record(&["City", "State", "Population", "Latitude", "Longitude"])?;
     wtr.write_record(&["Davidsons Landing", "AK", "", "65.2419444", "-165.2716667"])?;
@@ -18,9 +19,16 @@ fn run() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+fn get_first_arg() -> Result<OsString, Box<dyn Error>> {
+    match env::args_os().nth(1) {
+        None => Err(From::from("expected 1 argument, but got none")),
+        Some(file_path) => Ok(file_path),
+    }
+}
+
 fn main() {
     if let Err(err) = run() {
-        println!("error reading csv from <stdin>: {}", err);
+        println!("{}", err);
         process::exit(1);
     }
 }
