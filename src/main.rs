@@ -2,9 +2,11 @@ use std::{env, error::Error, ffi::OsString, process};
 
 fn run() -> Result<(), Box<dyn Error>> {
     let file_path = get_first_arg()?;
-    let mut rdr = csv::ReaderBuilder::new()
-        .has_headers(false)
-        .from_path(file_path)?;
+    let mut rdr = csv::ReaderBuilder::new().from_path(file_path)?;
+    {
+        let headers = rdr.headers()?;
+        println!("{:?}", headers);
+    }
     for result in rdr.records() {
         let record = result?;
         println!("{:?}", record);
