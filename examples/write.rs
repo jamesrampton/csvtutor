@@ -2,7 +2,10 @@ use std::{env, error::Error, ffi::OsString, process};
 
 fn run() -> Result<(), Box<dyn Error>> {
     let file_path = get_first_arg()?;
-    let mut wtr = csv::Writer::from_path(file_path)?;
+    let mut wtr = csv::WriterBuilder::new()
+        .delimiter(b'\t')
+        .quote_style(csv::QuoteStyle::NonNumeric)
+        .from_path(file_path)?;
 
     wtr.write_record(&["City", "State", "Population", "Latitude", "Longitude"])?;
     wtr.write_record(&["Davidsons Landing", "AK", "", "65.2419444", "-165.2716667"])?;
