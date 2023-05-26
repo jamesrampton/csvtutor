@@ -1,19 +1,42 @@
 use std::{env, error::Error, ffi::OsString, process};
 
+use serde::Serialize;
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "PascalCase")]
+struct Record<'a> {
+    city: &'a str,
+    state: &'a str,
+    population: Option<u64>,
+    latitude: f64,
+    longitude: f64,
+}
+
 fn run() -> Result<(), Box<dyn Error>> {
     let file_path = get_first_arg()?;
     let mut wtr = csv::WriterBuilder::new().from_path(file_path)?;
 
-    wtr.write_record(&["City", "State", "Population", "Latitude", "Longitude"])?;
-    wtr.serialize((
-        "Davidsons Landing",
-        "AK",
-        None::<u64>,
-        65.2419444,
-        -165.2716667,
-    ))?;
-    wtr.serialize(("Kenai", "AK", Some(7610), 60.5544444, -151.2583333))?;
-    wtr.serialize(("Oakman", "AL", None::<u64>, 33.7133333, -87.3886111))?;
+    wtr.serialize(Record {
+        city: "Davidsons Landing",
+        state: "AK",
+        population: None,
+        latitude: 65.2419444,
+        longitude: -165.2716667,
+    })?;
+    wtr.serialize(Record {
+        city: "Kenai",
+        state: "AK",
+        population: Some(7610),
+        latitude: 60.5544444,
+        longitude: -151.2583333,
+    })?;
+    wtr.serialize(Record {
+        city: "Oakman",
+        state: "AL",
+        population: None::<u64>,
+        latitude: 33.7133333,
+        longitude: -87.3886111,
+    })?;
     wtr.flush()?;
 
     Ok(())
